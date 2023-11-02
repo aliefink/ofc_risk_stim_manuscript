@@ -575,3 +575,26 @@ annotation('textbox',[.7 .75 .2 .1],'string',strcat('Adjusted Rsq: ',string(rsq)
 % labels1 = {'\bf\delta\theta\rm-\bf\gamma','\bf\alpha\rm-\bf\gamma','\bf\beta\rm-\bf\gamma'};%should be same length as xtips (1x3)
 % text(xtips1,ytips1,labels1,'HorizontalAlignment','center',...
 %     'VerticalAlignment','bottom','FontSize',18)
+
+
+%% Supplementary Figures 
+
+% Histogram of permutation values 
+
+
+surr = squeeze(cfc_all_subj.s02.perm_plvs{1,1}(1,1,:));
+
+plv_zscore = cfc_all_subj.s02.norm_real_plvs{1,1}(1,1);
+
+perm_fig = figure('Name','Single Electrode Single Pixel Permutation Distribution')
+histogram(surr,20,'FaceColor','#D95319')
+hold on 
+xline(plv_zscore,'--k','Observed PLV zscore','LineWidth',1.5)
+ylabel('Frequency')
+xlabel('Surrogate Phase Locking Values')
+title('Example Significant Permutation Distribution (n=1000)')
+saveas(perm_fig,[fig_path 'permutation_example.pdf'])
+
+% Another way to calculate pvalue - gives slightly different result...
+% F = @(x)(exp (-0.5*(x.^2))./sqrt (2*pi));
+% p = quad(F, plv_zscore, 100);
