@@ -2,15 +2,18 @@
 
 % path loading
 path_to_fieldtrip = '/Users/alexandrafink/Documents/MATLAB/SupportPackages/R2020b/fieldtrip-master/';
+path_to_scripts ='/Users/alexandrafink/Documents/GraduateSchool/SaezLab/gambling_stim_cfc/scripts/cfc/';
 data_path ='/Users/alexandrafink/Documents/GraduateSchool/SaezLab/gambling_stim_cfc/data/cfc_data/';
 save_path = '/Users/alexandrafink/Documents/GraduateSchool/SaezLab/gambling_stim_cfc/figs/cfc/';
 fig_path = '/Users/alexandrafink/Documents/GraduateSchool/SaezLab/gambling_stim_cfc/figs/cfc/results_methods/';
 
 
-addpath(genpath(fig_path))
+
 addpath(genpath(path_to_fieldtrip))
+addpath(genpath(path_to_scripts))
 addpath(genpath(data_path))
 addpath(genpath(save_path))
+addpath(genpath(fig_path))
 
 
 %% Load CFC Results, Normalize Electrode-Level Data, + Calculate Pixel-Level Statistics 
@@ -35,6 +38,11 @@ load([data_path 'cfc_results/cfc_all_subj.mat'])
 
 % calculate & plot mean plv matrices for significant and nonsignificant electrodes
 [sig_mean_plv,all_sig_plvs,nonsig_mean_plv,all_nonsig_plvs] = plot_mean_phase_amp_ranges(cfc_all_subj, subjs, sig_count,nonsig_count);
+
+
+% extract significant pixels:
+% [sig_elecs_by_subj,nonsig_elecs_by_subj,sig_count,nonsig_count, find_sig_elecs_header,cfc_all_subj] =find_sig_pixels(cfc_all_subj,subjs,'prop'); % can select pval 'zstat' or 'prop'
+% [sig_mean_plv,all_sig_plvs,nonsig_mean_plv,all_nonsig_plvs] = plot_mean_phase_amp_ranges(cfc_all_subj, subjs, sig_count,nonsig_count);
 
 
 

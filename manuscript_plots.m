@@ -1,12 +1,12 @@
 %% data loading
 path_to_fieldtrip = '/Users/alexandrafink/Documents/MATLAB/SupportPackages/R2020b/fieldtrip-master/';
-path_to_cfc ='/Users/alexandrafink/Documents/GraduateSchool/SaezLab/gambling_stim_cfc/scripts/cfc/';
+path_to_scripts ='/Users/alexandrafink/Documents/GraduateSchool/SaezLab/gambling_stim_cfc/scripts/cfc/';
 data_path ='/Users/alexandrafink/Documents/GraduateSchool/SaezLab/gambling_stim_cfc/data/cfc_data/';
 save_path = '/Users/alexandrafink/Documents/GraduateSchool/SaezLab/gambling_stim_cfc/figs/cfc/';
 fig_path = '/Users/alexandrafink/Documents/GraduateSchool/SaezLab/gambling_stim_cfc/figs/cfc/results_methods/';
 
 addpath(genpath(path_to_fieldtrip))
-addpath(genpath(path_to_cfc))
+addpath(genpath(path_to_scripts))
 addpath(genpath(data_path))
 addpath(genpath(save_path))
 addpath(genpath(fig_path))
@@ -364,7 +364,7 @@ errorbar(xtips1',err_data,err_sem,'k','linestyle','none','LineWidth', 1.5);%'Col
 %% Fig 3D - Risk correlation scatter plot DELTA THETA GAMMA RISK TRENDING BUT NOT ANYTHIGN FOR NOW
 % mean_deltatheta_gamma = all_elec_plv_info.delta_theta_hga_means;
 mean_deltatheta_gamma = sig_elec_plv_info.delta_theta_broadgamma_means(~isnan(sig_elec_plv_info.delta_theta_broadgamma_means)); %SIG
-
+mean_deltatheta_gamma = log(mean_deltatheta_gamma);
 % nonsig_subj_idx = find(isnan(mean_deltatheta_gamma));
 risk_prefs = [0.4644 0.5474 0.4435 0.529 0.5173 0.539 0.4229 0.3819 0.4914 0.4957 0.5712 0.3628 0.4865 0.4609 0.4853];
 risk_prefs = risk_prefs(~isnan(mean_deltatheta_gamma)); %remove nonsig subj 
@@ -376,7 +376,7 @@ p_val = table2array(lm.Coefficients(2,4));
 r=corr(mean_deltatheta_gamma.',risk_prefs.','type','pearson');
 
 scatter(mean_deltatheta_gamma,risk_prefs)
-xlabel('mean plv btwn delta-theta and hga')
+xlabel('log mean plv btwn delta-theta and hga')
 ylabel('Risk Preference')
 lsline
 annotation('textbox',[.7 .75 .2 .1],'string',strcat('Adjusted Rsq: ',string(rsq), ' Pearson R: ',string(r)))
