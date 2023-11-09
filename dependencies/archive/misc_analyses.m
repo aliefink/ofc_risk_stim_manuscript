@@ -1,5 +1,153 @@
 %% RANDOM PLOTS
 
+% %get plot data
+% %         
+% % [all_elec_plv_info,sig_elec_plv_info,nonsig_elec_plv_info,phase_freqs,amp_freqs] = ...
+% %     get_plv_freq_block_method(cfc_all_subj, subjs);
+% % 
+% % freq_specific_plvs = {all_elec_plv_info.delta_theta_gamma_means, all_elec_plv_info.delta_theta_hga_means,...
+% %     all_elec_plv_info.alpha_gamma_means, all_elec_plv_info.alpha_hga_means,...
+% %     all_elec_plv_info.beta_gamma_means,all_elec_plv_info.beta_hga_means};
+% % hga_letters = "HG";
+% 
+% 
+% plv_by_freq = figure('Name','Mean PLV by Freq');
+% plv_by_freq.Position = [0,0,750, 600];% plv_by_freq.Position(3:4) = [1000 1000];
+% 
+% x_idxs = [1 2 3];
+% bar_y_vals = [mean(all_elec_plv_info.delta_theta_gamma_means), mean(all_elec_plv_info.delta_theta_hga_means);...
+%     mean(all_elec_plv_info.alpha_gamma_means), mean(all_elec_plv_info.alpha_hga_means);...
+%     mean(all_elec_plv_info.beta_gamma_means),mean(all_elec_plv_info.beta_hga_means)];
+% b = bar(x_idxs,bar_y_vals,'grouped','FaceColor','flat','EdgeColor', 'w');
+% set(gca,'XTickLabels', {'\fontname{Lucida Grande}Delta-Theta \bf\delta\theta\rm',...
+%     '\fontname{Lucida Grande}Alpha \bf\alpha\rm','\fontname{Lucida Grande}Beta \bf\beta\rm'},...
+%     'FontSize',22,'FontName','Lucida Grande')%...
+% 
+% title({'\rm\fontname{Lucida Grande}Low Frequency Phase Coupling to Gamma \fontsize{34}(\bf\gamma\rm)', '\fontsize{30}& High Gamma (HG) Amplitudes'},...
+%     'VerticalAlignment','bottom','FontSize',30)
+% xlabel('\fontname{Lucida Grande}Frequency for Phase (Hz)','FontSize',26)
+% ylabel('\fontname{Lucida Grande}Phase-Amplitude Coupling (PLV)','FontSize',26)
+% hold on 
+% %manually set color data for each bar
+% b(1,1).CData(1,:) = [0.8706,0.1765,0.1490];%[222,45,38]./255;
+% b(1,1).CData(2,:) = [0.9882,0.5725,0.4471];%[252,146,114]./255;
+% b(1,1).CData(3,:) = [0.99,0.8, 0.7];%[254,224,210]./255;[252,174,145]./255;0.9961    0.8980    0.8510
+% 
+% b(1,2).CData(1,:) = [0.8706,0.1765,0.1490];%[222,45,38]./255;
+% b(1,2).CData(2,:) = [0.9882,0.5725,0.4471];%[252,146,114]./255;
+% b(1,2).CData(3,:) = [0.99,0.8, 0.7];%[254,224,210]./255;0.9957,0.8784,0.8235
+% 
+% %add amp frequency label to top of bars
+% xtips1 = b(1,1).XEndPoints; %1x3 X end points of gamma vals
+% ytips1 = b(1,1).YEndPoints; %1x3 Y end points of gamma vals
+% labels1 = {'\fontsize{20}\fontname{Lucida Grande}\bf\delta\theta\cdot\fontsize{22}\gamma',...
+%     '\fontsize{20}\fontname{Lucida Grande}\bf\alpha\cdot\fontsize{22}\gamma',...
+%     '\fontsize{20}\fontname{Lucida Grande}\bf\beta\cdot\fontsize{22}\gamma'};%should be same length as xtips (1x3)
+% text(xtips1,ytips1,labels1,'HorizontalAlignment','center',...
+%     'VerticalAlignment','bottom')
+% xtips2 = b(1,2).XEndPoints; %1x3 X end points of hga vals
+% ytips2 = b(1,2).YEndPoints; %1x3 Y end points of hga vals
+% labels2 = {join(['\fontname{Lucida Grande}\fontsize{20}\bf\delta\theta\cdot\rm\fontsize{16}\fontname{Lucida Grande}\it',hga_letters],'',2),...
+%     join(['\fontname{Lucida Grande}\fontsize{20}\bf\alpha\cdot\rm\fontsize{16}\fontname{Lucida Grande}\it',hga_letters],'',2),...
+%     join(['\fontname{Lucida Grande}\fontsize{20}\bf\beta\cdot\rm\fontsize{16}\fontname{Lucida Grande}\it',hga_letters],'',2)};%should be same length as xtips (1x3)
+% text(xtips2,ytips2,labels2,'HorizontalAlignment','center',...
+%     'VerticalAlignment','bottom')
+% 
+% % title({'\rm\fontname{Lucida Grande}Low Frequency Phase Coupling with High Frequency Amplitudes:'; 'Gamma (\bf\gamma\rm) Oscillations & High Frequency Activity (\itHFA\rm)'},...
+% %     'VerticalAlignment','bottom','FontSize',24)
+% % 
+% % set(gcf,'PaperOrientation','landscape'); %rotate plot to save horizontally
+% % % set(gcf,'PaperPosition', [0 0 20 10]); %set position of fig to be consistent with pdf sizing
+% % print(gcf,[fig_path 'barplot.pdf'],'-dpdf','-bestfit') %use print function to save as pdf and 'best fit' the page
+% 
+% % alternative saving options:
+% % exportgraphics(gcf,[fig_path 'barplot_plv_by_freq.pdf'],"ContentType","vector")
+% % saveas(plv_by_freq,[fig_path 'barplot_test.pdf'])
+% 
+% % set(gca,'XTickLabels', {'\fontsize{20}\fontname{Lucida Grande}\bf\delta\theta\cdot\fontsize{22}\gamma',...
+% %     '\fontsize{20}\fontname{Lucida Grande}\bf\alpha\cdot\fontsize{22}\gamma',...
+% %     '\fontsize{20}\fontname{Lucida Grande}\bf\beta\cdot\fontsize{22}\gamma'},...
+% %     'FontSize',22,'FontName','Lucida Grande')%...
+% %% BROADBAND GAMMA ONLY 
+% 
+% plv_by_freq = figure('Name','Mean PLV by Freq');
+% plv_by_freq.Position = [0,0,700, 600];% plv_by_freq.Position(3:4) = [1000 1000];
+% 
+% x_idxs = [1 2 3];
+% bar_y_vals = [mean(all_elec_plv_info.delta_theta_broadgamma_means);...
+%     mean(all_elec_plv_info.alpha_broadgamma_means);...
+%     mean(all_elec_plv_info.beta_broadgamma_means)];
+% 
+% b = bar(x_idxs,bar_y_vals,'FaceColor','flat','EdgeColor', 'w');
+% 
+% set(gca,'XTickLabels', {'\fontname{Lucida Grande}Delta-Theta',...
+%     '\fontname{Lucida Grande}Alpha',...
+%     '\fontname{Lucida Grande}Beta'},...
+%     'FontSize',22,'FontName','Lucida Grande')
+% 
+% title({'\rm\fontname{Lucida Grande}Coupling Between Low Frequency Phase and'; 'Broadband Gamma Amplitude'},...
+%     'VerticalAlignment','bottom','FontSize',24)
+% 
+% 
+% xlabel('\fontname{Lucida Grande}Frequency for Phase (Hz)','FontSize',24)
+% ylabel('\fontname{Lucida Grande}Phase-Amplitude Coupling (PLV)','FontSize',24)
+% 
+% hold on 
+% 
+% 
+% %manually set color data for each bar
+% b(1,1).CData(1,:) = [0.8706,0.1765,0.1490];%[222,45,38]./255;
+% b(1,1).CData(2,:) = [0.9882,0.5725,0.4471];%[252,146,114]./255;
+% b(1,1).CData(3,:) = [0.99,0.8, 0.7];%[254,224,210]./255;
+% 
+% hold on 
+% %add sem bars to amp frequency label to top of bars
+% %calculate sem for bar
+% b1_data_pts = all_elec_plv_info.delta_theta_broadgamma_means;
+% b1_sem =  std(all_elec_plv_info.delta_theta_broadgamma_means)/sqrt(15);
+% b1_upper = mean(b1_data_pts)+b1_sem;
+% b1_lower = mean(b1_data_pts)-b1_sem;
+% 
+% b2_data_pts = all_elec_plv_info.alpha_broadgamma_means;
+% b2_sem =  std(all_elec_plv_info.alpha_broadgamma_means)/sqrt(15);
+% b2_upper = mean(b2_data_pts)+b2_sem;
+% b2_lower = mean(b2_data_pts)-b2_sem;
+% 
+% b3_data_pts = all_elec_plv_info.beta_broadgamma_means;
+% b3_sem =  std(all_elec_plv_info.beta_broadgamma_means)/sqrt(15);
+% b3_upper = mean(b3_data_pts)+b3_sem;
+% b3_lower = mean(b3_data_pts)-b3_sem;
+% 
+% 
+% % err_data = [mean(all_elec_plv_info.delta_theta_broadgamma_means),...
+% %     mean(all_elec_plv_info.alpha_broadgamma_means),...
+% %     mean(all_elec_plv_info.beta_broadgamma_means)];
+% err_data = bar_y_vals;
+% err_sem = [b1_sem;b2_sem;b3_sem];
+% % [ngroups, nbars] = size(bar_y_vals);
+% % groupwidth = min(0.8, nbars/(nbars + 1.5));
+% % x = (1:ngroups) - groupwidth/2 + (2*i-1) * groupwidth / (2*nbars);
+% 
+% %get x coords of bars
+% xtips1 = b(1,1).XEndPoints; %1x3 X end points of gamma vals
+% errorbar(xtips1',err_data,err_sem,'k','linestyle','none','LineWidth', 1.5);%'Color', [.25 .25 .25]);
+% % err_lower = [b1_lower,b2_lower,b3_lower];
+% % err_upper = [b1_upper,b2_upper,b3_upper];
+% 
+% 
+% % xtips1 = b(1,1).XEndPoints; %1x3 X end points of gamma vals
+% % ytips1 = b(1,1).YEndPoints; %1x3 Y end points of gamma vals
+% 
+% 
+% % labels1 = {'\fontname{Lucida Grande}\bf\delta\theta\cdot\gamma',...
+% %     '\fontname{Lucida Grande}\bf\alpha\cdot\gamma',...
+% %     '\fontname{Lucida Grande}\bf\beta\cdot\gamma'};%should be same length as xtips (1x3)
+% % text(xtips1,ytips1,labels1,'HorizontalAlignment','center',...
+% %     'VerticalAlignment','bottom','FontSize',18)
+% % set(gcf,'PaperOrientation','landscape'); %rotate plot to save horizontally
+% % % set(gcf,'PaperPosition', [0 0 20 10]); %set position of fig to be consistent with pdf sizing
+% % print(gcf,[fig_path 'barplot_broadgamma_sem.pdf'],'-dpdf','-bestfit') %use print function to save as pdf and 'best fit' the page
+
 
 
 % %% Plot percent sig elecs within subj x risk pref 

@@ -1,12 +1,13 @@
 function [sig_elecs_by_subj,nonsig_elecs_by_subj,sig_count,nonsig_count,...
-    find_sig_elecs_header,cfc_all_subj] = find_sig_elecs(cfc_all_subj,subjs,pval_type)
+    find_sig_elecs_header,cfc_all_subj] = find_sig_elecs(cfc_all_subj,subjs,pval_type,plot_elec)
 
-
+%pval_type can either be 'prop' or 'zstat'
+%plot_elec can either be 'yes' or 'no'
 
 % header with info for sig elecs and non sig elecs data 
 find_sig_elecs_header.pval_type = {pval_type}; %which significance test generated pvals (pval_type either 'prop' or 'zstat') 
 find_sig_elecs_header.row_labels = {'num_elecs','elec_ids','all_elec_mean_raw_plv','all_elec_mean_norm_plv',...
-    'adj_pvals','cluster_amps','cluster_phases','cluster_mat','cluster_pvals','cluster_sig_pixel_prop'};
+    'elec_norm_plv_mats','adj_pvals','cluster_amps','cluster_phases','cluster_mat','cluster_pvals','cluster_sig_pixel_prop'};
 
 
 sig_elecs_by_subj = {}; %row corresponds to find_sig_elecs_header.row_labels
@@ -25,6 +26,7 @@ for s=1:length(subjs)
     subj_sig_elecs = []; %elec ids of subj sig electrodes
     subj_sig_mean_raw_plv = []; % raw plv means for all sig elecs - will be averaged
     subj_sig_mean_norm_plv = []; % norm plv means for all sig elecs - will be averaged
+    subj_sig_norm_plv_mats = {}; % norm plv full matrices for all sig elecs
     subj_sig_adj_pvals = {}; %adjusted pvals from fdr correction for each electrode
     subj_sig_clust_amps = {}; %amplitude freqs of largest cluster for each electrode
     subj_sig_clust_phases = {}; %amplitude freqs of largest cluster for each electrode
@@ -36,6 +38,7 @@ for s=1:length(subjs)
     subj_nonsig_elecs = []; %elec ids of subj nonsig electrodes
     subj_nonsig_mean_raw_plv = []; % raw plv means for all nonsig elecs - will be averaged
     subj_nonsig_mean_norm_plv = []; % norm plv means for all nonsig elecs - will be averaged
+    subj_nonsig_norm_plv_mats = {}; % norm plv full matrices for all nonsig elecs
     subj_nonsig_adj_pvals = {}; %adjusted pvals from fdr correction for each nonsig electrode
     subj_nonsig_clust_amps = {}; %amplitude freqs of largest cluster for each nonsig electrode
     subj_nonsig_clust_phases = {}; %amplitude freqs of largest cluster for each nonsig electrode
@@ -70,10 +73,30 @@ for s=1:length(subjs)
                         %proportion of corrected pixel pvals < 0.05 (alpha)
                         %must be greater than 0.95 (95% of clust pixels are significant)
         
-        %step 1:                
-        cm = contourf(plv); %get contours of normalized plv mat
-        contourTable = getContourLineCoordinates(cm); %extract contour information %function from 2020, Adam Danz
-
+        %step 1:       
+        figure;
+        [cm,h] = contourf(plv); %get contours of normalized plv mat
+        if strcmp(plot_elec,'yes')
+            single_elec_fig_path = '/Users/alexandrafink/Documents/GraduateSchool/SaezLab/gambling_stim_cfc/data/cfc_data/cfc_results/';
+            fig_save_path = [single_elec_fig_path subj_id '/'];
+            amp_f_array = 5:5:200;
+            phase_f_array = 2:20;
+            % Set locations of ticks and their labels.
+            set(gca, 'XTick', 1:2:19, 'XTickLabel', phase_f_array(1:2:end),...
+            'YTick', 5:5:40, 'YTickLabel', amp_f_array(5:5:end),'FontSize',22,...
+            'TickDir','in','FontName','Lucida Grande');
+            title(['\rm' subj_id ' Electrode ' num2str(elec)],'FontSize',22,'FontName','Lucida Grande');
+            xlabel('Frequency for Phase (Hz)','FontSize',26,'FontName','Lucida Grande');
+            ylabel('Frequency for Amplitude (Hz)','FontSize',26,'FontName','Lucida Grande');
+            h = colorbar;
+            set(get(h, 'ylabel'), 'string', '\fontsize{26}PLV Z-Score','FontSize',22,'FontName','Lucida Grande');
+            saveas(gca,[fig_save_path, subj_id, '_', num2str(elec), '_plv.pdf'])
+        end 
+        
+        [contourTable,contourArray] = getContourLineCoordinates(cm); %extract contour information %function from 2020, Adam Danz
+        %number of contours is max num Group in contourTable or len
+        %contourArray
+        
         %step 2:
         
         %option 1 - extract all clusters 2 std above mean 
@@ -116,6 +139,9 @@ for s=1:length(subjs)
             %step 4:
                 % to be considered a cluster - must have at least 2
                 % consecutive significant frequency bands for phase and amp
+%             cluster_mat = plv(sig_amp_idx,sig_phase_idx); %extract norm plv matrix of corrected cluster
+%             cluster_pvals = adj_p(sig_amp_idx,sig_phase_idx); %get corrected pvalues of every pixel in cluster
+%             cluster_sig_pixel_prop = sum(cluster_pvals<=0.05,'all')/numel(cluster_pvals); %calculate proportion of pvalues < 0.05 - if 95% of p values are < 0.05, cluster is significant!
 
             if sum(diff(sig_amp_idx)==1) == 0 %if there are no consecutive sig amps
                 %define null matrices for nonsig data structure
@@ -123,14 +149,14 @@ for s=1:length(subjs)
                 cluster_pvals = []; % no pvalues - no cluster exists 
                 cluster_sig_pixel_prop = 0; % no significant pixels
 
-            elseif sum(diff(sig_amp_idx)==1) == 0 %if there are no consecutive sig phases
-                %define null matrices for nonsig data structure
-                cluster_mat = []; % no significant clusters
-                cluster_pvals = []; % no pvalues - no cluster exists 
-                cluster_sig_pixel_prop = 0; % no significant pixels
+%             elseif sum(diff(sig_phase_idx)==1) == 0 %if there are no consecutive sig phases
+%                 %define null matrices for nonsig data structure
+%                 cluster_mat = []; % no significant clusters
+%                 cluster_pvals = []; % no pvalues - no cluster exists 
+%                 cluster_sig_pixel_prop = 0; % no significant pixels
 
             else 
-            %step 5: 
+%             %step 5: 
                 cluster_mat = plv(sig_amp_idx,sig_phase_idx); %extract norm plv matrix of corrected cluster
                 cluster_pvals = adj_p(sig_amp_idx,sig_phase_idx); %get corrected pvalues of every pixel in cluster
                 cluster_sig_pixel_prop = sum(cluster_pvals<=0.05,'all')/numel(cluster_pvals); %calculate proportion of pvalues < 0.05 - if 95% of p values are < 0.05, cluster is significant!
@@ -149,6 +175,7 @@ for s=1:length(subjs)
             subj_sig_elecs(subj_count,:) = elec; %add elec id to sig elec tracker
             subj_sig_mean_raw_plv(subj_count,:) = elec_mean_raw_plv; % raw plv mean
             subj_sig_mean_norm_plv(subj_count,:) = elec_mean_norm_plv; % norm plv mean
+            subj_sig_norm_plv_mats(subj_count,:) = {plv}; % plv norm full matrix
             subj_sig_adj_pvals(subj_count,:) = {adj_p}; %adjusted pvals from fdr correction
             subj_sig_clust_amps(subj_count,:) = {sig_amp_idx}; % amp freq index (corrected!)
             subj_sig_clust_phases(subj_count,:) = {sig_phase_idx}; % phase freq index
@@ -164,6 +191,7 @@ for s=1:length(subjs)
             subj_nonsig_elecs(nonsig_subj_count,:) = elec; %add elec id to nonsig elec tracker
             subj_nonsig_mean_raw_plv(nonsig_subj_count,:) = elec_mean_raw_plv; % raw plv mean
             subj_nonsig_mean_norm_plv(nonsig_subj_count,:) = elec_mean_norm_plv; % norm plv mean
+            subj_nonsig_norm_plv_mats(nonsig_subj_count,:) = {plv}; % plv norm full matrix
             subj_nonsig_adj_pvals(nonsig_subj_count,:) = {adj_p}; %adjusted pvals from fdr correction
             subj_nonsig_clust_amps(nonsig_subj_count,:) = {sig_amp_idx}; %amp freqs of largest cluster (zero if no clusters)
             subj_nonsig_clust_phases(nonsig_subj_count,:) = {sig_phase_idx}; %phase freqs of largest cluster (zero if no clusters)
@@ -174,7 +202,7 @@ for s=1:length(subjs)
             
         end 
         
-        close all
+        close all %close figure window 
         % just lots of if statements, no inner loops
         
     end %end of electrode loop
@@ -190,24 +218,26 @@ for s=1:length(subjs)
     sig_elecs_by_subj(2,s) = {subj_sig_elecs}; %elec id of sig elecs within subj
     sig_elecs_by_subj(3,s) = {sig_mean_raw_plv}; %all_elec_mean_raw_plv
     sig_elecs_by_subj(4,s) = {sig_mean_norm_plv}; %all_elec_mean_norm_plv
-    sig_elecs_by_subj(5,s) = {subj_sig_adj_pvals}; %adjusted pvals from fdr correction for each sig elec
-    sig_elecs_by_subj(6,s) = {subj_sig_clust_amps}; % sig elec amp freq index (corrected!)
-    sig_elecs_by_subj(7,s) = {subj_sig_clust_phases}; % sig elec phase freq index
-    sig_elecs_by_subj(8,s) = {subj_sig_clust_mats}; % sig clusters norm plv for each elec 
-    sig_elecs_by_subj(9,s) = {subj_sig_clust_pvals}; % sig clusters pixels pvals for each elec
-    sig_elecs_by_subj(10,s) = {subj_sig_cluster_sig_pixel_prop}; % prop of cluster pvalues <=0.05 for each elec (should all be >=0.95)
+    sig_elecs_by_subj(5,s) = {subj_sig_norm_plv_mats}; %norm plv mats for each sig elec
+    sig_elecs_by_subj(6,s) = {subj_sig_adj_pvals}; %adjusted pvals from fdr correction for each sig elec
+    sig_elecs_by_subj(7,s) = {subj_sig_clust_amps}; % sig elec amp freq index (corrected!)
+    sig_elecs_by_subj(8,s) = {subj_sig_clust_phases}; % sig elec phase freq index
+    sig_elecs_by_subj(9,s) = {subj_sig_clust_mats}; % sig clusters norm plv for each elec 
+    sig_elecs_by_subj(10,s) = {subj_sig_clust_pvals}; % sig clusters pixels pvals for each elec
+    sig_elecs_by_subj(11,s) = {subj_sig_cluster_sig_pixel_prop}; % prop of cluster pvalues <=0.05 for each elec (should all be >=0.95)
 
 
     nonsig_elecs_by_subj(1,s) = {nonsig_subj_count}; %num nonsig elecs within subj
     nonsig_elecs_by_subj(2,s) = {subj_nonsig_elecs}; %elec id of nonsig elecs within subj
     nonsig_elecs_by_subj(3,s) = {nonsig_mean_raw_plv}; %all_elec_mean_raw_plv
     nonsig_elecs_by_subj(4,s) = {nonsig_mean_norm_plv}; %all_elec_mean_norm_plv
-    nonsig_elecs_by_subj(5,s) = {subj_nonsig_adj_pvals}; %adjusted pvals from fdr correction for each nonsig elec
-    nonsig_elecs_by_subj(6,s) = {subj_nonsig_clust_amps}; %amp freqs of largest cluster for nonsig elecs (zero if no clusters)
-    nonsig_elecs_by_subj(7,s) = {subj_nonsig_clust_phases}; %phase freqs of largest cluster for nonsig elecs (zero if no clusters)
-    nonsig_elecs_by_subj(8,s) = {subj_nonsig_clust_mats}; % clusters norm plv mats for each non elec (zero if no clusters)
-    nonsig_elecs_by_subj(9,s) = {subj_nonsig_clust_pvals}; % clusters pixels pvals for each non elec (zero if no clusters)
-    nonsig_elecs_by_subj(10,s) = {subj_nonsig_cluster_sig_pixel_prop}; % prop of cluster pvalues <=0.05 for each elec (should all be <0.95 or 0)
+    nonsig_elecs_by_subj(5,s) = {subj_nonsig_norm_plv_mats}; %norm plv mats for each sig elec
+    nonsig_elecs_by_subj(6,s) = {subj_nonsig_adj_pvals}; %adjusted pvals from fdr correction for each nonsig elec
+    nonsig_elecs_by_subj(7,s) = {subj_nonsig_clust_amps}; %amp freqs of largest cluster for nonsig elecs (zero if no clusters)
+    nonsig_elecs_by_subj(8,s) = {subj_nonsig_clust_phases}; %phase freqs of largest cluster for nonsig elecs (zero if no clusters)
+    nonsig_elecs_by_subj(9,s) = {subj_nonsig_clust_mats}; % clusters norm plv mats for each non elec (zero if no clusters)
+    nonsig_elecs_by_subj(10,s) = {subj_nonsig_clust_pvals}; % clusters pixels pvals for each non elec (zero if no clusters)
+    nonsig_elecs_by_subj(11,s) = {subj_nonsig_cluster_sig_pixel_prop}; % prop of cluster pvalues <=0.05 for each elec (should all be <0.95 or 0)
     
     %data to update all subj struct  
         %add sig data
