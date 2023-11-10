@@ -139,29 +139,26 @@ for s=1:length(subjs)
             %step 4:
                 % to be considered a cluster - must have at least 2
                 % consecutive significant frequency bands for phase and amp
-%             cluster_mat = plv(sig_amp_idx,sig_phase_idx); %extract norm plv matrix of corrected cluster
-%             cluster_pvals = adj_p(sig_amp_idx,sig_phase_idx); %get corrected pvalues of every pixel in cluster
-%             cluster_sig_pixel_prop = sum(cluster_pvals<=0.05,'all')/numel(cluster_pvals); %calculate proportion of pvalues < 0.05 - if 95% of p values are < 0.05, cluster is significant!
+                
+            %uncomment to remove consecutive amplitude requirement   
+            cluster_mat = plv(sig_amp_idx,sig_phase_idx); %extract norm plv matrix of corrected cluster
+            cluster_pvals = adj_p(sig_amp_idx,sig_phase_idx); %get corrected pvalues of every pixel in cluster
+            cluster_sig_pixel_prop = sum(cluster_pvals<=0.05,'all')/numel(cluster_pvals); %calculate proportion of pvalues < 0.05 - if 95% of p values are < 0.05, cluster is significant!
 
-            if sum(diff(sig_amp_idx)==1) == 0 %if there are no consecutive sig amps
-                %define null matrices for nonsig data structure
-                cluster_mat = []; % no significant clusters
-                cluster_pvals = []; % no pvalues - no cluster exists 
-                cluster_sig_pixel_prop = 0; % no significant pixels
-
-%             elseif sum(diff(sig_phase_idx)==1) == 0 %if there are no consecutive sig phases
+%             if sum(diff(sig_amp_idx)==1) == 0 %if there are no consecutive sig amps
 %                 %define null matrices for nonsig data structure
 %                 cluster_mat = []; % no significant clusters
 %                 cluster_pvals = []; % no pvalues - no cluster exists 
 %                 cluster_sig_pixel_prop = 0; % no significant pixels
-
-            else 
-%             %step 5: 
-                cluster_mat = plv(sig_amp_idx,sig_phase_idx); %extract norm plv matrix of corrected cluster
-                cluster_pvals = adj_p(sig_amp_idx,sig_phase_idx); %get corrected pvalues of every pixel in cluster
-                cluster_sig_pixel_prop = sum(cluster_pvals<=0.05,'all')/numel(cluster_pvals); %calculate proportion of pvalues < 0.05 - if 95% of p values are < 0.05, cluster is significant!
-                
-            end 
+% 
+% 
+%             else 
+% %             %step 5: 
+%                 cluster_mat = plv(sig_amp_idx,sig_phase_idx); %extract norm plv matrix of corrected cluster
+%                 cluster_pvals = adj_p(sig_amp_idx,sig_phase_idx); %get corrected pvalues of every pixel in cluster
+%                 cluster_sig_pixel_prop = sum(cluster_pvals<=0.05,'all')/numel(cluster_pvals); %calculate proportion of pvalues < 0.05 - if 95% of p values are < 0.05, cluster is significant!
+%                 
+%             end 
                 
 
         end

@@ -50,7 +50,7 @@ for i_phase = 1:n_phase_freqs %for each frequency of the phase data
     fs = filter_with_chirplet('raw_signal', e_signal, ...
         'signal_parameters', sp, ...
         'chirplet', g1);
-    lf_phase = angle(fs.time_domain);
+    lf_phase = angle(fs.time_domain); %low frequency phase time series %%%should save this out if possible
     clear g.center_frequency
     
     for i_amp = 1:n_amp_freqs %for each frequency of the amplitude data
@@ -59,18 +59,20 @@ for i_phase = 1:n_phase_freqs %for each frequency of the phase data
         
         g.center_frequency = amp_f;
         g2 = make_chirplet('chirplet_structure', g, 'signal_parameters', sp);
-        
+        c
         % filter raw signal at high frequency, extract amplitude:
         fs = filter_with_chirplet('raw_signal', e_signal, ...
             'signal_parameters', sp, ...
             'chirplet', g2);
-        hf_amp = abs(fs.time_domain);
-        % filter high frequency amplitude time-series at low
-        % frequency, extract phase:
+        hf_amp = abs(fs.time_domain); %%% should save this out at some point!
+        
+        % filter high frequency amplitude time-series at low frequency, extract phase:
         fs = filter_with_chirplet('raw_signal', hf_amp, ...
             'signal_parameters', sp, ...
             'chirplet', g1);%filter at low frequency
-        hf_phase = angle(fs.time_domain); %extract phase of high frequency amplitude
+        
+        hf_phase = angle(fs.time_domain); %extract phase of high frequency amplitude %%%should save this out!t
+        %should plot lf_phase, hf_amp, hf_phase out
         
         % this chunks out data for ALL EVENTS in a particular condition AFTER*** filtering
         [chunked_low_phase chunked_high_phase] = get_session_data_AF(subj_id, pth_data,...

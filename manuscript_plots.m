@@ -315,9 +315,9 @@ sig_bar_y_vals = [mean(sig_elec_plv_info.delta_theta_gamma_means,'omitnan'), mea
     mean(sig_elec_plv_info.alpha_gamma_means,'omitnan'), mean(sig_elec_plv_info.alpha_hga_means,'omitnan');...
     mean(sig_elec_plv_info.beta_gamma_means,'omitnan'),mean(sig_elec_plv_info.beta_hga_means,'omitnan')];
 b = bar(x_idxs,sig_bar_y_vals,'grouped','FaceColor','flat','EdgeColor', 'w');
-set(gca,'XTickLabels', {'\fontname{Lucida Grande}Delta-Theta \bf\delta\theta\rm','TickLength',[0 0],...
+set(gca,'XTickLabels', {'\fontname{Lucida Grande}Delta-Theta \bf\delta\theta\rm',...
     '\fontname{Lucida Grande}Alpha \bf\alpha\rm','\fontname{Lucida Grande}Beta \bf\beta\rm'},...
-    'FontSize',22,'FontName','Lucida Grande')%...
+    'TickLength',[0 0],'FontSize',22,'FontName','Lucida Grande')%...
 
 title({'\rm\fontname{Lucida Grande}Sig Elec Low Frequency Phase Coupling to Gamma \fontsize{34}(\bf\gamma\rm)', '\fontsize{30}& High Gamma (HG) Amplitudes'},...
     'VerticalAlignment','bottom','FontSize',30)
@@ -567,14 +567,15 @@ set(gcf,'PaperOrientation','landscape'); %rotate plot to save horizontally
 
 
 
-%% Risk correlation scatter plot DELTA THETA GAMMA RISK TRENDING BUT NOT ANYTHIGN FOR NOW
+%% Risk correlation scatter plot DELTA THETA GAMMA RISK
+
 % mean_deltatheta_gamma = all_elec_plv_info.delta_theta_hga_means;
 mean_deltatheta_gamma = sig_elec_plv_info.delta_theta_broadgamma_means(~isnan(sig_elec_plv_info.delta_theta_broadgamma_means)); %SIG
-% mean_deltatheta_gamma = log(mean_deltatheta_gamma);
+mean_deltatheta_gamma = log(mean_deltatheta_gamma);
 % nonsig_subj_idx = find(isnan(mean_deltatheta_gamma));
 risk_prefs = [0.4644 0.5474 0.4435 0.529 0.5173 0.539 0.4229 0.3819 0.4914 0.4957 0.5712 0.3628 0.4865 0.4609 0.4853];
 risk_prefs = risk_prefs(~isnan(mean_deltatheta_gamma)); %remove nonsig subj 
-
+% risk_prefs = log(risk_prefs);
 
 lm = fitlm(mean_deltatheta_gamma,risk_prefs)
 rsq = lm.Rsquared.Adjusted;
@@ -587,47 +588,32 @@ ylabel('Risk Preference')
 lsline
 annotation('textbox',[.7 .75 .2 .1],'string',strcat('Adjusted Rsq: ',string(rsq), ' Pearson R: ',string(r)))
 
+%without log p-value = 0.0355, with log p-value = 0.147
+
 %delta theta gamma p 0.366, hga p 0.22 broadgamma p 0.249
 %alpha p 0.554 beta p 0.419
 % 
-% %% Fig 3E - Coherence correlation scatter plot
-% coh_header = {'RiskPref', 'coh_delta_theta', 'coh_delta',	'coh_theta',	'coh_alpha',  'coh_beta'};
-% coh_delta_theta = mean_coh(:,3)'; %load by hand for now...
+
+%% Fig 3E - Coherence correlation scatter plot
+coh_header = {'RiskPref', 'coh_delta_theta', 'coh_delta',	'coh_theta',	'coh_alpha',  'coh_beta'};
+load('/Users/alexandrafink/Documents/GraduateSchool/SaezLab/gambling_stim_cfc/data/coh_data/OrG-OrG-Decision_coh_all_lowfreq.mat')
+coh_delta_theta = mean_coh(:,3)';
 % mean_delta_theta_gamma_plvs = all_elec_plv_info.delta_theta_hga_means; %0.363
-% 
-% lm = fitlm(mean_delta_theta_gamma_plvs,coh_delta_theta)
-% rsq = lm.Rsquared.Adjusted;
-% p_val = table2array(lm.Coefficients(2,4));
-% r=corr(mean_delta_theta_gamma_plvs.',coh_delta_theta.','type','pearson');
-% 
-% 
-% scatter(mean_delta_theta_gamma_plvs,coh_delta_theta)
-% ylabel('Mean Delta-Theta Coherence')
-% xlabel('Mean Delta-Theta Gamma PLV')
-% lsline
-% annotation('textbox',[.7 .75 .2 .1],'string',strcat('Adjusted Rsq: ',string(rsq), ' Pearson R: ',string(r)))
+mean_deltatheta_gamma = sig_elec_plv_info.delta_theta_broadgamma_means(~isnan(sig_elec_plv_info.delta_theta_broadgamma_means)); %SIG
+mean_deltatheta_gamma = log(mean_deltatheta_gamma); %p-value = 0.029 ONLY WITHOUT CONSEC AMP REQUIREMENT
 
-% %% CHECK FOR CORRS WITH SIG SUBJ ONLY - nothing for risk at all
-% sig_subj = subjs(1,find([sig_elecs_by_subj{1,:}]~=0));
-% sig_subj_idx = find([sig_elecs_by_subj{1,:}]~=0);
-% 
-% sig_subj_risks = risk_prefs(sig_subj_idx);
-% 
-% coh_delta_theta = mean_coh(:,4)'; %load by hand for now... 0.359 gamma delta theta
-% sig_subj_cohs = coh_delta_theta(sig_subj_idx);
-% 
-% mean_deltatheta_gamma = all_elec_plv_info.delta_theta_broadgamma_means;
-% sig_subj_plvs = mean_deltatheta_gamma(sig_subj_idx);
-% 
-% lm = fitlm(sig_subj_plvs,sig_subj_cohs)
-% rsq = lm.Rsquared.Adjusted;
-% p_val = table2array(lm.Coefficients(2,4));
-% r=corr(sig_subj_plvs.',sig_subj_cohs.','type','pearson');
-% 
-% scatter(sig_subj_plvs,sig_subj_cohs)
-% xlabel('sig_subj_plvs')
-% ylabel('sig_subj_cohs')
-% lsline
-% annotation('textbox',[.7 .75 .2 .1],'string',strcat('Adjusted Rsq: ',string(rsq), ' Pearson R: ',string(r)))
+coh_delta_theta = coh_delta_theta(~isnan(mean_deltatheta_gamma)); %remove nonsig subj 
+% coh_delta_theta = log(coh_delta_theta);
 
+lm = fitlm(mean_deltatheta_gamma,coh_delta_theta)
+rsq = lm.Rsquared.Adjusted;
+p_val = table2array(lm.Coefficients(2,4));
+r=corr(mean_deltatheta_gamma.',coh_delta_theta.','type','pearson');
+
+
+scatter(mean_deltatheta_gamma,coh_delta_theta)
+ylabel('Mean Delta-Theta Coherence')
+xlabel('Mean Delta-Theta Gamma PLV')
+lsline
+annotation('textbox',[.7 .75 .2 .1],'string',strcat('Adjusted Rsq: ',string(rsq), ' Pearson R: ',string(r)))
 
