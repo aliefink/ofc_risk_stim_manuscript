@@ -393,7 +393,7 @@ xlabel('Surrogate Phase Locking Values')
 title('Example Not Significant Permutation Distribution (n=1000)')
 % saveas(perm_fig,[fig_path 'SOM_methods/nonsig_permutation_example.pdf'])
 
-%% FDR Correction Schematic sig = s06 e 11, nonsig = s02 e 22
+%% FDR Correction Schematic
 subj_id = 's06';
 elec_id = '11';
 data = cfc_all_subj.s06; % s06 11; s08 94; s04 80
@@ -442,7 +442,7 @@ pval_fig = figure('Name','pvalue distributions')
 pval_fig.Position = [0, 0, 750, 600]; %best fig size!
 histogram(og_pval_vec,'FaceAlpha',0.8,'Normalization','count','BinWidth',0.05,...
     'DisplayName',join(['\fontname{Lucida Grande}\fontsize{18}Uncorrected \itp\rm values \newline '...
-    num_og_sig '/' num_pixels ' < \fontsize{22}\bf\alpha\rm\fontsize{18}'],''));
+    num_og_sig '/' num_pixels ' < \fontsize{20}\bf\alpha\rm\fontsize{18}'],''));
 hold on;
 xline(0.05,'--k','LineWidth',1.5,'Alpha',1,'DisplayName',...
     '\fontname{Lucida Grande}\fontsize{18}Significance Threshold\newline\fontsize{22}\bf\alpha\rm\fontname{Lucida Grande}\fontsize{18} = 0.05',...
@@ -468,109 +468,30 @@ pval_fig = figure('Name','pvalue distributions')
 pval_fig.Position = [0, 0, 750, 600]; %best fig size!
 histogram(fdr_pval_vec,'FaceColor','#D95319','FaceAlpha',0.8,...
     'Normalization','count','BinWidth',0.05,'DisplayName',...
-    join(['FDR Corrected \itp\rm values \newline' num_fdr_sig ...
-    '/' num_pixels ' < \fontsize{22}\bf\alpha'],'')); %set bin width to alpha for count of < alpha
+    'FDR Adjusted p values\newline num sig'); %set bin width to alpha for count of < alpha
 hold on;
-xline(0.05,'--k','LineWidth',1.5,'Alpha',1,'DisplayName',...
-    '\fontname{Lucida Grande}\fontsize{18}Significance Threshold\newline\fontsize{22}\bf\alpha\rm\fontname{Lucida Grande}\fontsize{18} = 0.05',...
-    'LabelOrientation','horizontal')
-set(gca,'TickLength',[0 0],'FontSize',18,'FontName','Lucida Grande');
-xlabel('PLV \itp\rm value','FontSize',22,'FontName','Lucida Grande');
-ylabel('Count','FontSize',22,'FontName','Lucida Grande');
-% xlim([0,max(fdr_pval_vec)])
-legend()
-
-set(gca, 'box', 'off')
-
-set(gcf,'PaperOrientation','landscape'); %rotate plot to save horizontally
-% print(gcf,[fig_path  '/SOM_methods/significant_pval_fdr_only.pdf'],'-dpdf','-bestfit') %use print function to save as pdf and 'best fit' the page
-
-%% %% NONSIGFDR Correction Schematic sig = s06 e 11, nonsig = s02 e 22
-subj_id = 's02';
-elec_id = '21';
-data = cfc_all_subj.s02; % s06 11; s08 94; s04 80
-elec_num = 21;
-
-%uncorrected pvalues
-og_pvals = data.prop_pvals{1,find(data.ofc_elecs==elec_num)};
-og_pval_vec = reshape(og_pvals,1,[]);
-num_og_sig = string(sum(og_pval_vec<0.05));
-%corrected pvalues
-fdr_pvals = nonsig_elecs_by_subj{6,find(strcmp(subjs,subj_id))}{find(nonsig_elecs_by_subj{2,find(strcmp(subjs,subj_id))}==elec_num),1}; %adj pval is row 6,subj is col, elec is row in cell 
-fdr_pval_vec = reshape(fdr_pvals,1,[]);
-num_fdr_sig = string(sum(fdr_pval_vec<0.05));
-%total number of pixels
-num_pixels = string(length(fdr_pval_vec));
-
-pval_fig = figure('Name','pvalue distributions') 
-pval_fig.Position = [0, 0, 750, 600]; %best fig size!
-histogram(og_pval_vec,'FaceAlpha',0.8,'Normalization','count','BinWidth',0.05);%,'DisplayName','Uncorrected p values');
-hold on;
-histogram(fdr_pval_vec,'FaceAlpha',0.8,'Normalization','count','BinWidth',0.05);%,'DisplayName','FDR Adjusted p values\newline num sig'); %set bin width to alpha for count of < alpha
-hold on;
-xline(0.05,'--k',...
-    '\fontname{Lucida Grande}\fontsize{18}Significance Threshold\newline\fontsize{22}\bf\alpha\rm\fontname{Lucida Grande}\fontsize{18} = 0.05',...
+xline(0.05,'--k','\fontname{Lucida Grande}\fontsize{22}\bf\alpha\rm\fontname{Lucida Grande}\fontsize{18} = 0.05',...
     'LineWidth',1.5,'Alpha',1,...
     'LabelOrientation','horizontal')
 set(gca,'TickLength',[0 0],'FontSize',18,'FontName','Lucida Grande');
 xlabel('PLV \itp\rm value','FontSize',22,'FontName','Lucida Grande');
 ylabel('Count','FontSize',22,'FontName','Lucida Grande');
 % xlim([0,max(fdr_pval_vec)])
-legend({join(['Uncorrected \itp\rm values \newline' num_og_sig '/' num_pixels ' < \fontsize{20}\bf\alpha'],''),...
-    join(['FDR Corrected \itp\rm values \newline' num_fdr_sig '/' num_pixels ' < \fontsize{20}\bf\alpha'],'')},...
-    'FontSize',18,'FontName','Lucida Grande','Location','best')
-set(gca, 'box', 'off')
-
-set(gcf,'PaperOrientation','landscape'); %rotate plot to save horizontally
-% print(gcf,[fig_path  '/SOM_methods/nonsignificant_pval_two_dist_s2e21.pdf'],'-dpdf','-bestfit') %use print function to save as pdf and 'best fit' the page
-
-
-pval_fig = figure('Name','pvalue distributions') 
-pval_fig.Position = [0, 0, 750, 600]; %best fig size!
-histogram(og_pval_vec,'FaceAlpha',0.8,'Normalization','count','BinWidth',0.05,...
-    'DisplayName',join(['\fontname{Lucida Grande}\fontsize{18}Uncorrected \itp\rm values \newline '...
-    num_og_sig '/' num_pixels ' < \fontsize{22}\bf\alpha\rm\fontsize{18}'],''));
-hold on;
-xline(0.05,'--k','LineWidth',1.5,'Alpha',1,'DisplayName',...
-    '\fontname{Lucida Grande}\fontsize{18}Significance Threshold\newline\fontsize{22}\bf\alpha\rm\fontname{Lucida Grande}\fontsize{18} = 0.05',...
-    'LabelOrientation','horizontal')
-set(gca,'TickLength',[0 0],'FontSize',18,'FontName','Lucida Grande');
-xlabel('PLV \itp\rm value','FontSize',22,'FontName','Lucida Grande');
-ylabel('Count','FontSize',22,'FontName','Lucida Grande');
-legend()
-set(gca, 'box', 'off')
-set(gcf,'PaperOrientation','landscape'); %rotate plot to save horizontally
-% print(gcf,[fig_path  '/SOM_methods/NONsignificant_pval_uncorrected_only.pdf'],'-dpdf','-bestfit') %use print function to save as pdf and 'best fit' the page
-
-
-
-pval_fig = figure('Name','pvalue distributions') 
-pval_fig.Position = [0, 0, 750, 600]; %best fig size!
-histogram(fdr_pval_vec,'FaceColor','#D95319','FaceAlpha',0.8,...
-    'Normalization','count','BinWidth',0.05,'DisplayName',...
-    join(['FDR Corrected \itp\rm values \newline' num_fdr_sig ...
-    '/' num_pixels ' < \fontsize{22}\bf\alpha'],'')); %set bin width to alpha for count of < alpha
-hold on;
-xline(0.05,'--k','LineWidth',1.5,'Alpha',1,'DisplayName',...
-    '\fontname{Lucida Grande}\fontsize{18}Significance Threshold\newline\fontsize{22}\bf\alpha\rm\fontname{Lucida Grande}\fontsize{18} = 0.05',...
-    'LabelOrientation','horizontal')
-set(gca,'TickLength',[0 0],'FontSize',18,'FontName','Lucida Grande');
-xlabel('PLV \itp\rm value','FontSize',22,'FontName','Lucida Grande');
-ylabel('Count','FontSize',22,'FontName','Lucida Grande');
-% xlim([0,max(fdr_pval_vec)])
-legend()
+legend({join(['Uncorrected \itp\rm values \newline ' num_og_sig '/' num_pixels ' < \fontsize{20}\bf\alpha\rm\fontsize{18}'],''),...
+    join(['FDR Corrected \itp\rm values \newline(' num_fdr_sig '/' num_pixels ' < \fontsize{20}\bf\alpha\rm\fontsize{18})'],'')},...
+    'FontSize',18,'FontName','Lucida Grande')
 
 set(gca, 'box', 'off')
 
 set(gcf,'PaperOrientation','landscape'); %rotate plot to save horizontally
-% print(gcf,[fig_path  '/SOM_methods/NONsignificant_pval_fdr_only.pdf'],'-dpdf','-bestfit') %use print function to save as pdf and 'best fit' the page
+% print(gcf,[fig_path subj_id '_' elec_id '_single_elec_plv.pdf'],'-dpdf','-bestfit') %use print function to save as pdf and 'best fit' the page
 
 
 
 %% Risk correlation scatter plot DELTA THETA GAMMA RISK TRENDING BUT NOT ANYTHIGN FOR NOW
 % mean_deltatheta_gamma = all_elec_plv_info.delta_theta_hga_means;
 mean_deltatheta_gamma = sig_elec_plv_info.delta_theta_broadgamma_means(~isnan(sig_elec_plv_info.delta_theta_broadgamma_means)); %SIG
-% mean_deltatheta_gamma = log(mean_deltatheta_gamma);
+mean_deltatheta_gamma = log(mean_deltatheta_gamma);
 % nonsig_subj_idx = find(isnan(mean_deltatheta_gamma));
 risk_prefs = [0.4644 0.5474 0.4435 0.529 0.5173 0.539 0.4229 0.3819 0.4914 0.4957 0.5712 0.3628 0.4865 0.4609 0.4853];
 risk_prefs = risk_prefs(~isnan(mean_deltatheta_gamma)); %remove nonsig subj 
