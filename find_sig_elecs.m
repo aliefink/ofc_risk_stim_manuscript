@@ -22,6 +22,8 @@ for s=1:length(subjs)
     subj_id = char(subjs(s));
     data = cfc_all_subj.(subj_id);
     
+    all_adj_pval_mats = {};
+    
     subj_count=0; %num significant electrodes within subj
     subj_sig_elecs = []; %elec ids of subj sig electrodes
     subj_sig_mean_raw_plv = []; % raw plv means for all sig elecs - will be averaged
@@ -141,24 +143,24 @@ for s=1:length(subjs)
                 % consecutive significant frequency bands for phase and amp
                 
             %uncomment to remove consecutive amplitude requirement   
-            cluster_mat = plv(sig_amp_idx,sig_phase_idx); %extract norm plv matrix of corrected cluster
-            cluster_pvals = adj_p(sig_amp_idx,sig_phase_idx); %get corrected pvalues of every pixel in cluster
-            cluster_sig_pixel_prop = sum(cluster_pvals<=0.05,'all')/numel(cluster_pvals); %calculate proportion of pvalues < 0.05 - if 95% of p values are < 0.05, cluster is significant!
+%             cluster_mat = plv(sig_amp_idx,sig_phase_idx); %extract norm plv matrix of corrected cluster
+%             cluster_pvals = adj_p(sig_amp_idx,sig_phase_idx); %get corrected pvalues of every pixel in cluster
+%             cluster_sig_pixel_prop = sum(cluster_pvals<=0.05,'all')/numel(cluster_pvals); %calculate proportion of pvalues < 0.05 - if 95% of p values are < 0.05, cluster is significant!
 
-%             if sum(diff(sig_amp_idx)==1) == 0 %if there are no consecutive sig amps
-%                 %define null matrices for nonsig data structure
-%                 cluster_mat = []; % no significant clusters
-%                 cluster_pvals = []; % no pvalues - no cluster exists 
-%                 cluster_sig_pixel_prop = 0; % no significant pixels
-% 
-% 
-%             else 
-% %             %step 5: 
-%                 cluster_mat = plv(sig_amp_idx,sig_phase_idx); %extract norm plv matrix of corrected cluster
-%                 cluster_pvals = adj_p(sig_amp_idx,sig_phase_idx); %get corrected pvalues of every pixel in cluster
-%                 cluster_sig_pixel_prop = sum(cluster_pvals<=0.05,'all')/numel(cluster_pvals); %calculate proportion of pvalues < 0.05 - if 95% of p values are < 0.05, cluster is significant!
-%                 
-%             end 
+            if sum(diff(sig_amp_idx)==1) == 0 %if there are no consecutive sig amps
+                %define null matrices for nonsig data structure
+                cluster_mat = []; % no significant clusters
+                cluster_pvals = []; % no pvalues - no cluster exists 
+                cluster_sig_pixel_prop = 0; % no significant pixels
+
+
+            else 
+%             %step 5: 
+                cluster_mat = plv(sig_amp_idx,sig_phase_idx); %extract norm plv matrix of corrected cluster
+                cluster_pvals = adj_p(sig_amp_idx,sig_phase_idx); %get corrected pvalues of every pixel in cluster
+                cluster_sig_pixel_prop = sum(cluster_pvals<=0.05,'all')/numel(cluster_pvals); %calculate proportion of pvalues < 0.05 - if 95% of p values are < 0.05, cluster is significant!
+                
+            end 
                 
 
         end
@@ -179,7 +181,7 @@ for s=1:length(subjs)
             subj_sig_clust_mats(subj_count,:) = {cluster_mat}; %matrix of normalized plvs for most significant clusters
             subj_sig_clust_pvals(subj_count,:) = {cluster_pvals}; %matrix of pvals corresponding to pixels in most significant clusters
             subj_sig_cluster_sig_pixel_prop(subj_count,:) = {cluster_sig_pixel_prop}; %proportion of cluster pvalues <= 0.05
-
+            all_adj_pval_mats(e,:) = {adj_p};
             
         else
             % add data to nonsig_elecs_by_subj
@@ -195,7 +197,9 @@ for s=1:length(subjs)
             subj_nonsig_clust_mats(nonsig_subj_count,:) = {cluster_mat}; %matrix of normalized plvs for most significant clusters (empty if none)
             subj_nonsig_clust_pvals(nonsig_subj_count,:) = {cluster_pvals}; %matrix of pvals corresponding to pixels in clusters (empty if none)
             subj_nonsig_cluster_sig_pixel_prop(nonsig_subj_count,:) = {cluster_sig_pixel_prop}; %proportion of cluster pvalues <= 0.05 (zero if no good clust)
-
+            all_adj_pval_mats(e,:) = {adj_p};
+            
+            
             
         end 
         
@@ -237,12 +241,16 @@ for s=1:length(subjs)
     nonsig_elecs_by_subj(11,s) = {subj_nonsig_cluster_sig_pixel_prop}; % prop of cluster pvalues <=0.05 for each elec (should all be <0.95 or 0)
     
     %data to update all subj struct  
+    %add correction info 
+    data.fdr_adj_pvals = all_adj_pval_mats; %fdr corrected pval mats
+    
         %add sig data
     data.sig_elec_num = subj_count; %num sig elecs for each subj
     data.sig_elecs = subj_sig_elecs; % elec ids of sig elecs
     data.sig_mean_real_plv = sig_mean_raw_plv; %mean raw plv of sig elecs
     data.sig_mean_norm_plv = sig_mean_norm_plv; %mean norm plv of sig elecs
-        %add non significant data
+    
+    %add non significant data
     data.nonsig_elec_num = nonsig_subj_count; %num nonsig elecs for each subj
     data.nonsig_elecs = subj_nonsig_elecs; % elec ids of nonsig elecs
     data.nonsig_mean_real_plv = nonsig_mean_raw_plv; %mean raw plv of nonsig elecs

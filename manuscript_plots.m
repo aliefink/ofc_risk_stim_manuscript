@@ -109,14 +109,32 @@ plot_areaerrorbar(sig_mean_plv, options);
 hold on 
 % set(fig,'defaultAxesFontSize',18);
 set(gca,'FontSize',16,'XTick', phase_f_array(1:2:end),'TickLength',[0 0],...
-    'FontName','Lucida Grande','box','off');
-xlabel('Frequency for Phase (Hz)','FontSize',24,'FontName','Lucida Grande');
-ylabel('PLV Z-Score','FontSize',24,'FontName','Lucida Grande');
+    'FontName','Helvetica','box','off');
+xlabel('Frequency for Phase (Hz)','FontSize',24,'FontName','Helvetica');
+ylabel('PLV Z-Score','FontSize',24,'FontName','Helvetica');
 % ylabel('PLV_{z}','FontSize',24,'FontName','Lucida Grande');
-xlim([phase_f_array(1),phase_f_array(end)])
-ylim([1 3.25])
+% xlim([phase_f_array(1),phase_f_array(end)])
+% ylim([1 3.25])
+hold on
+
 % print(gcf,[fig_path 'GREEN Phase Freq Distribution of PLVs.pdf'],'-dpdf','-bestfit')
-% findpeaks(plv_distr_phase_freqs) PHASE PEAKS AT 2 AND 4!
+
+plv_distr_phase_freqs = mean(sig_mean_plv,1); %mean along columns - phase means
+[phase_peaks, phase_locs] = findpeaks(plv_distr_phase_freqs); % PHASE PEAKS AT 2 AND 4!
+phase_peak_yidx = max(plv_distr_phase_freqs) + 0.25;
+
+d = [2 3];
+t = [4 5 6 7 8];
+
+for x=1:length(phase_locs)
+    freq = round(phase_locs(x));
+    if sum(find(d ==freq)) 
+    text(freq,phase_peak_yidx,'\fontsize{20}\fontname{Helvetica}\bf\delta\cdot\gamma','horizontalalignment','center')
+    else
+    text(freq,phase_peak_yidx,'\fontsize{20}\fontname{Helvetica}\bf\theta\cdot\gamma','horizontalalignment','center')
+    end
+end 
+
 
 %%%%%PHASE line plot
 
@@ -154,7 +172,37 @@ set(gca,'XTick',4:4:40,'XTickLabel',amp_f_array(4:4:end),'FontSize',16,...
 xlabel('Frequency for Amplitude (Hz)','FontSize',24,'FontName','Lucida Grande');
 % ylabel('PLV_{z}','FontSize',26,'FontName','Lucida Grande');
 ylabel('PLV Z-Score','FontSize',24,'FontName','Lucida Grande');
-xlim([1,40])
+% xlim([1,40])
+hold on 
+plv_distr_amp_freqs = mean(sig_mean_plv,2)'; %mean along rows - amp means
+[amp_peaks, amp_locs] = findpeaks(plv_distr_amp_freqs); % PHASE PEAKS AT 2 AND 4!
+
+
+b = 12:1:29;
+g = 30:1:59;
+hg = 60:1:200;
+
+for x=1:length(amp_locs)
+    freq_idx = round(amp_locs(x));
+    freq = amp_f_array(round(amp_locs(x)));
+    amp_peak_yidx = plv_distr_amp_freqs(1,freq_idx) + 0.5;
+    if sum(find(b ==freq)) 
+    text(freq_idx,amp_peak_yidx,...
+        '\fontsize{20}\fontname{Helvetica}\bf\beta','horizontalalignment','center')
+    elseif sum(find(g ==freq)) 
+    text(freq_idx,amp_peak_yidx,...
+        '\fontsize{20}\fontname{Helvetica}\bf\gamma','horizontalalignment','center')
+    else
+    text(freq_idx,amp_peak_yidx,...
+        '\fontsize{20}\fontname{Helvetica}\itH\rm\fontsize{20}\fontname{Helvetica}\bf\gamma',...
+        'horizontalalignment','center')
+    end
+    
+end
+
+
+ylim([0,max(plv_distr_amp_freqs +1)]);
+
 % print(gcf,[fig_path 'Amp Freq Distribution of PLVs.pdf'],'-dpdf','-bestfit')
 %%%%AMP PEAKS AT 35 AND 90
 
@@ -211,9 +259,13 @@ plv_by_freq = figure('Name','Mean PLV by Freq');
 plv_by_freq.Position = [0,0,700, 600];% plv_by_freq.Position(3:4) = [1000 1000];
 
 x_idxs = [1 2 3];
-bar_y_vals = [mean(sig_elec_plv_info.delta_theta_broadgamma_means,'omitnan');...
-    mean(sig_elec_plv_info.alpha_broadgamma_means,'omitnan');...
-    mean(sig_elec_plv_info.beta_broadgamma_means,'omitnan')];
+bar_y_vals = [log(mean(sig_elec_plv_info.delta_theta_broadgamma_means,'omitnan'));...
+    log(mean(sig_elec_plv_info.alpha_broadgamma_means,'omitnan'));...
+    log(mean(sig_elec_plv_info.beta_broadgamma_means,'omitnan'))];
+% 
+% bar_y_vals = [mean(sig_elec_plv_info.delta_theta_broadgamma_means,'omitnan');...
+%     mean(sig_elec_plv_info.alpha_broadgamma_means,'omitnan');...
+%     mean(sig_elec_plv_info.beta_broadgamma_means,'omitnan')];
 
 b = bar(x_idxs,bar_y_vals,'FaceColor','flat','EdgeColor', 'w');
 
@@ -248,21 +300,35 @@ b(1,1).CData(3,:) = [254,224,210]./255;%[254,224,210]./255;Or[253,174,107]
 hold on 
 %add sem bars to amp frequency label to top of bars
 %calculate sem for bar
-b1_data_pts = sig_elec_plv_info.delta_theta_broadgamma_means;
-b1_sem =  std(sig_elec_plv_info.delta_theta_broadgamma_means,'omitnan')/sqrt(15);
-b1_upper = mean(b1_data_pts,'omitnan')+b1_sem;
-b1_lower = mean(b1_data_pts,'omitnan')-b1_sem;
+b1_data_pts = log(sig_elec_plv_info.delta_theta_broadgamma_means);
+b1_sem =  log(std(sig_elec_plv_info.delta_theta_broadgamma_means,'omitnan'))/sqrt(14);
+b1_upper = log(mean(b1_data_pts,'omitnan'))+b1_sem;
+b1_lower = log(mean(b1_data_pts,'omitnan'))-b1_sem;
 
-b2_data_pts = sig_elec_plv_info.alpha_broadgamma_means;
-b2_sem =  std(sig_elec_plv_info.alpha_broadgamma_means,'omitnan')/sqrt(15);
-b2_upper = mean(b2_data_pts,'omitnan')+b2_sem;
-b2_lower = mean(b2_data_pts,'omitnan')-b2_sem;
+b2_data_pts = log(sig_elec_plv_info.alpha_broadgamma_means);
+b2_sem = log(std(sig_elec_plv_info.alpha_broadgamma_means,'omitnan'))/sqrt(14);
+b2_upper = log(mean(b2_data_pts,'omitnan'))+b2_sem;
+b2_lower = log(mean(b2_data_pts,'omitnan'))-b2_sem;
 
-b3_data_pts = sig_elec_plv_info.beta_broadgamma_means;
-b3_sem =  std(sig_elec_plv_info.beta_broadgamma_means,'omitnan')/sqrt(15);
-b3_upper = mean(b3_data_pts,'omitnan')+b3_sem;
-b3_lower = mean(b3_data_pts,'omitnan')-b3_sem;
-
+b3_data_pts = log(sig_elec_plv_info.beta_broadgamma_means);
+b3_sem =  log(std(sig_elec_plv_info.beta_broadgamma_means,'omitnan'))/sqrt(14);
+b3_upper = log(mean(b3_data_pts,'omitnan'))+b3_sem;
+b3_lower = log(mean(b3_data_pts,'omitnan'))-b3_sem;
+% 
+% b1_data_pts = log(sig_elec_plv_info.delta_theta_broadgamma_means);
+% b1_sem =  log(std(sig_elec_plv_info.delta_theta_broadgamma_means,'omitnan'))/sqrt(14);
+% b1_upper = log(mean(b1_data_pts,'omitnan'))+b1_sem;
+% b1_lower = log(mean(b1_data_pts,'omitnan'))-b1_sem;
+% 
+% b2_data_pts = log(sig_elec_plv_info.alpha_broadgamma_means);
+% b2_sem = log(std(sig_elec_plv_info.alpha_broadgamma_means,'omitnan'))/sqrt(14);
+% b2_upper = log(mean(b2_data_pts,'omitnan'))+b2_sem;
+% b2_lower = log(mean(b2_data_pts,'omitnan'))-b2_sem;
+% 
+% b3_data_pts = log(sig_elec_plv_info.beta_broadgamma_means);
+% b3_sem =  log(std(sig_elec_plv_info.beta_broadgamma_means,'omitnan'))/sqrt(14);
+% b3_upper = log(mean(b3_data_pts,'omitnan'))+b3_sem;
+% b3_lower = log(mean(b3_data_pts,'omitnan'))-b3_sem;
 
 % err_data = [mean(all_elec_plv_info.delta_theta_broadgamma_means),...
 %     mean(all_elec_plv_info.alpha_broadgamma_means),...
@@ -296,6 +362,8 @@ set(gcf,'PaperOrientation','landscape');
 % % % set(gcf,'PaperPosition', [0 0 20 10]); %set position of fig to be consistent with pdf sizing
 % % print(gcf,[fig_path 'barplot_broadgamma_sem.pdf'],'-dpdf','-bestfit') %use print function to save as pdf and 'best fit' the page
 
+
+%significance testing for barplot 
 
 
 %% SIG ELEC ONLY BARPLOTS - GAMMA/HGA SPLIT

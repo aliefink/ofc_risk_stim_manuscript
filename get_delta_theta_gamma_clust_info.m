@@ -1,4 +1,4 @@
-function [all_elec_plv_info,sig_elec_plv_info] = get_plv_freq_info_clust_method(cfc_all_subj, subjs, sig_amp_idx,sig_phase_idx)
+function [all_elec_plv_info,sig_elec_plv_info] = get_delta_theta_gamma_clust_info(cfc_all_subj, subjs, sig_amp_idx,sig_phase_idx)
 %outputs: all_elec_plv_info, sig_elec_plv_info
 
 % frequency-specific information - define for all subj

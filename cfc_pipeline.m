@@ -84,7 +84,13 @@ cfc_all_subj = get_cfc_results_all(subjs,data_path);
     get_plv_freq_block_method(cfc_all_subj, subjs); %can use block or cluster method
 
 
-%% Step Four: 
+%% Step Four: Visualization & Summary Statistics
+
+%Significant Electrodes Mean Comodulogram
+%Group-Level Frequency Distributions for Phase/Amp 
+%Broadband Gamma Coupling By Phase Freq Band Bar Plot
+%Summary Statistics Information for each figure 
+
 
 
 
