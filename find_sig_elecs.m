@@ -142,7 +142,7 @@ for s=1:length(subjs)
                 % to be considered a cluster - must have at least 2
                 % consecutive significant frequency bands for phase and amp
                 
-            %uncomment to remove consecutive amplitude requirement   
+%             %uncomment to remove consecutive amplitude requirement   
 %             cluster_mat = plv(sig_amp_idx,sig_phase_idx); %extract norm plv matrix of corrected cluster
 %             cluster_pvals = adj_p(sig_amp_idx,sig_phase_idx); %get corrected pvalues of every pixel in cluster
 %             cluster_sig_pixel_prop = sum(cluster_pvals<=0.05,'all')/numel(cluster_pvals); %calculate proportion of pvalues < 0.05 - if 95% of p values are < 0.05, cluster is significant!
@@ -155,7 +155,7 @@ for s=1:length(subjs)
 
 
             else 
-%             %step 5: 
+            %step 5: 
                 cluster_mat = plv(sig_amp_idx,sig_phase_idx); %extract norm plv matrix of corrected cluster
                 cluster_pvals = adj_p(sig_amp_idx,sig_phase_idx); %get corrected pvalues of every pixel in cluster
                 cluster_sig_pixel_prop = sum(cluster_pvals<=0.05,'all')/numel(cluster_pvals); %calculate proportion of pvalues < 0.05 - if 95% of p values are < 0.05, cluster is significant!

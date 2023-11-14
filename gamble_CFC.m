@@ -1,5 +1,8 @@
 %% A. Fink CFC Analysis Fall 2023
 
+
+
+
 % path loading
 path_to_fieldtrip = '/Users/alexandrafink/Documents/MATLAB/SupportPackages/R2020b/fieldtrip-master/';
 path_to_scripts ='/Users/alexandrafink/Documents/GraduateSchool/SaezLab/gambling_stim_cfc/scripts/cfc/';

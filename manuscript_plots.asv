@@ -251,7 +251,7 @@ freq_dist.Position = [0,0,700, 600];% plv_by_freq.Position(3:4) = [1000 1000];
 
 tiledlayout(2,1)
 
-% PHASE PLOT
+% Top plot
 nexttile
 options.handle = freq_dist;
 options.color_area = [0 70 126]./255; %6th of 7-class YlGnBu colorbrewer2  33,113,181 33,113,181
@@ -275,7 +275,7 @@ hold on
 
 plv_distr_phase_freqs = mean(sig_mean_plv,1); %mean along columns - phase means
 [phase_peaks, phase_locs] = findpeaks(plv_distr_phase_freqs); % PHASE PEAKS AT 2 AND 4!
-phase_peak_yidx = max(plv_distr_phase_freqs) + 0.35;
+phase_peak_yidx = max(plv_distr_phase_freqs) + 0.25;
 
 d = [2 3];
 t = [4 5 6 7 8];
@@ -288,11 +288,11 @@ for x=1:length(phase_locs)
     text(freq,phase_peak_yidx,'\fontsize{22}\fontname{Arial}\bf\theta','horizontalalignment','center')
     end
 end 
-ylim([0,max(plv_distr_phase_freqs +0.75)]);
+ylim([0,max(plv_distr_phase_freqs +1)]);
 
+% title('Plot 1')
 
-
-% AMP PLOT
+% Bottom plot
 nexttile
 options.handle = freq_dist;
 options.color_area = [86 28 70]./255; % 239,59,446th of 7-class Reds colorbrewer2 O 217,72,1   R 239,59,44  G 0,109,44 P 106,81,163
@@ -321,23 +321,24 @@ hg = 60:1:200;
 for x=1:length(amp_locs)
     freq_idx = round(amp_locs(x));
     freq = amp_f_array(round(amp_locs(x)));
-    amp_peak_yidx = plv_distr_amp_freqs(1,freq_idx);
+    amp_peak_yidx = plv_distr_amp_freqs(1,freq_idx) + 0.5;
     if sum(find(b ==freq)) 
     text(freq_idx,amp_peak_yidx,...
-        '\fontsize{22}\fontname{Arial}\bf\beta','horizontalalignment','center')
+        '\fontsize{20}\fontname{Arial}\bf\beta','horizontalalignment','center')
     elseif sum(find(g ==freq)) 
-    text(freq_idx,amp_peak_yidx+ 0.65,...
-        '\fontsize{22}\fontname{Arial}\bf\gamma','horizontalalignment','center')
+    text(freq_idx,amp_peak_yidx,...
+        '\fontsize{20}\fontname{Arial}\bf\gamma','horizontalalignment','center')
     else
-    text(freq_idx,amp_peak_yidx+ 0.5,...
-        '\fontsize{20}\fontname{Arial}\itH\rm\fontsize{22}\fontname{Arial}\bf\gamma',...
+    text(freq_idx,amp_peak_yidx,...
+        '\fontsize{20}\fontname{Arial}\itH\rm\fontsize{20}\fontname{Arial}\bf\gamma',...
         'horizontalalignment','center')
     end
     
 end
 ylim([0,max(plv_distr_amp_freqs +1)]);
 xlim([1,40])
-set(gcf,'PaperOrientation','landscape'); %set(gca, 'box', 'off')
+
+% title('Plot 2')
 
 
 
@@ -345,8 +346,7 @@ set(gcf,'PaperOrientation','landscape'); %set(gca, 'box', 'off')
 
 
 
-
-% print(gcf,[fig_path 'Freq Distribution Combo.pdf'],'-dpdf','-bestfit')
+% print(gcf,[fig_path 'Amp Freq Distribution of PLVs.pdf'],'-dpdf','-bestfit')
 
 
 %% Fig 2D - Bar plot PLV values by frequency (block method)
