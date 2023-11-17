@@ -1,8 +1,5 @@
 %% A. Fink CFC Analysis Fall 2023
 
-
-
-
 % path loading
 path_to_fieldtrip = '/Users/alexandrafink/Documents/MATLAB/SupportPackages/R2020b/fieldtrip-master/';
 path_to_scripts ='/Users/alexandrafink/Documents/GraduateSchool/SaezLab/gambling_stim_cfc/scripts/cfc/';
@@ -93,26 +90,26 @@ end
 num_delta_theta_clust = 0;
 num_gamma_clust = 0;
     
-for s=1:length(subjs) %iterate through all subjects   
-    subj_id = char(subjs(s));
-    if sig_elecs_by_subj{1,s}== 0 %skip nonsig subj
-        continue 
-    end 
-    num_sig_elecs = sig_elecs_by_subj{1,s};
-    
-    for e=1:num_sig_elecs
-        clust_phases = sig_elecs_by_subj{7,s}{e};
-        
-        phase_dist = clust_phases;
-        
-        for p=1:
-            
-        end
-        clust_amps = sig_elecs_by_subj{8,s}{e};
-    end 
-        
-    
-end 
+% for s=1:length(subjs) %iterate through all subjects   
+%     subj_id = char(subjs(s));
+%     if sig_elecs_by_subj{1,s}== 0 %skip nonsig subj
+%         continue 
+%     end 
+%     num_sig_elecs = sig_elecs_by_subj{1,s};
+%     
+%     for e=1:num_sig_elecs
+%         clust_phases = sig_elecs_by_subj{7,s}{e};
+%         
+%         phase_dist = clust_phases;
+%         
+%         for p=1:
+%             
+%         end
+%         clust_amps = sig_elecs_by_subj{8,s}{e};
+%     end 
+%         
+%     
+% end 
 
     
 

@@ -72,7 +72,15 @@ set(gcf,'PaperOrientation','landscape'); %rotate plot to save horizontally
 
 % saveas(plv_single_elec,[fig_path, num2str(elec_num), '_single_elec_plv.pdf'])
 
+%%%%%summary stats for fig a:
+% mean(plv_mat,'all')
+% std(plv_mat,[],'all','omitnan')
+% max(plv_mat,[],'all')
+% [row,col] = find(plv_mat == max(plv_mat,[],'all')) %row = amp idx, col = phase idx
+% phase_f_array(col)
+% amp_f_array(row)
 
+    
 
 %% Fig 2B - Average PLV significant electrodes
 
@@ -99,6 +107,30 @@ set(gcf,'PaperOrientation','landscape'); %set(gca, 'box', 'off')
 
 % print(gcf,[fig_path 'group_mean_plv_sig_elecs_short_title.pdf'],'-dpdf','-bestfit')
 
+%%%%%summary stats for fig b:
+% mean(sig_mean_plv,'all')
+% std(sig_mean_plv,[],'all','omitnan')
+% max(sig_mean_plv,[],'all')
+% [row,col] = find(sig_mean_plv == max(sig_mean_plv,[],'all')) %row = amp idx, col = phase idx
+% phase_f_array(col)
+% amp_f_array(row)
+
+
+% %%%%get contour distribution for max plvs 
+% [cm,h] = contourf(sig_mean_plv);
+% [contourTable, contourArray] = getContourLineCoordinates(cm);
+% max_z = 3;%max(contourTable.Level);
+% max_level = contourTable.Level>=max_z;
+% max_levelX = contourTable.X(max_level);
+% max_levelY = contourTable.Y(max_level); %amplitudes of most significant cluster
+% amp_f_array = 5:5:200;
+% phase_f_array = 2:20;
+% sig_phase_idx = unique(round(max_levelX));
+% sig_amp_idx = unique(round(max_levelY));
+% sig_phases = phase_f_array(sig_phase_idx');
+% sig_amps = amp_f_array(sig_amp_idx');
+% sig_phases
+% sig_amps
 %% Fig 2C - Line plots of frequency distributions
 phase_f_array = 2:20;
 figure
@@ -140,6 +172,15 @@ for x=1:length(phase_locs)
     end
 end 
 % print(gcf,[fig_path 'Phase Freq Distribution of PLVs.pdf'],'-dpdf','-bestfit')
+
+% %%%summary stats
+% phase_peaks %PLV for each peak
+% phase_locs %amp for each peak
+% phase_f_array(phase_locs(1))
+% phase_f_array(phase_locs(2))
+% mean(plv_distr_phase_freqs)
+% std(plv_distr_phase_freqs)
+% (std(plv_distr_phase_freqs)./sqrt(size(plv_distr_phase_freqs',1))) %SEM
 
 %%%%%PHASE line plot
 
@@ -209,6 +250,15 @@ end
 ylim([0,max(plv_distr_amp_freqs +1)]);
 % print(gcf,[fig_path 'Amp Freq Distribution of PLVs.pdf'],'-dpdf','-bestfit')
 
+%%%summary stats
+amp_peaks %PLV for each peak
+amp_locs %amp for each peak
+amp_f_array(amp_locs(1))
+amp_f_array(amp_locs(2))
+mean(plv_distr_amp_freqs)
+std(plv_distr_amp_freqs)
+(std(plv_distr_amp_freqs)./sqrt(size(plv_distr_amp_freqs',1))) %SEM
+
 
 %%%%AMP PEAKS AT 35 AND 90
 
@@ -247,7 +297,7 @@ amp_f_array = 5:5:200;
 phase_f_array = 2:20;
 
 freq_dist = figure('Name','Frequency Distributions');
-freq_dist.Position = [0,0,700, 600];% plv_by_freq.Position(3:4) = [1000 1000];
+freq_dist.Position = [0,0,700, 600];
 
 tiledlayout(2,1)
 
@@ -337,16 +387,16 @@ for x=1:length(amp_locs)
 end
 ylim([0,max(plv_distr_amp_freqs +1)]);
 xlim([1,40])
-set(gcf,'PaperOrientation','landscape'); %set(gca, 'box', 'off')
+% set(gcf,'PaperOrientation','landscape'); %set(gca, 'box', 'off')
+
+set(gca, 'box', 'off')
 
 
 
 
 
 
-
-
-% print(gcf,[fig_path 'Freq Distribution Combo.pdf'],'-dpdf','-bestfit')
+% print(gcf,[fig_path 'Freq Distribution Combo Vert.pdf'],'-dpdf','-bestfit')
 
 
 %% Fig 2D - Bar plot PLV values by frequency (block method)
@@ -545,7 +595,7 @@ ip_deltatheta_gamma_fig.Position = [0,0,750, 600];% plv_by_freq.Position(3:4) = 
 scatter(mean_deltatheta_gamma,risk_prefs,150,[255 172 77]./255,'filled')
 hold on
 h = lsline;
-set(h,'LineWidth',2.5,'Color',[193 155 211]./255,'LineStyle','--'); %[193 155 211]./255
+set(h,'LineWidth',2.5,'Color','k','LineStyle','--'); %[193 155 211]./255
 annotation('textbox',[.75 .75 .15 .125],'string',strcat('R^{2} = '," ",string(rsq),...
     '\newline\itr\rm ='," ",string(r), '\newline\itp\rm = '," ", string(p_val)),...
     'FontSize',20,'FontName','Arial','LineWidth',1,'LineStyle','none',...
@@ -558,8 +608,8 @@ xlabel('PLV Z-Score (\bf\delta\theta\cdot\gamma\rm)','FontSize',24)
 
 ylabel('Indifference Point','FontSize',24)
 set(gca, 'box', 'off')
-set(gcf,'PaperOrientation','landscape');
-% print(gcf,[fig_path 'plv_risk.pdf'],'-dpdf','-bestfit') %use print function to save as pdf and 'best fit' the page
+% set(gcf,'PaperOrientation','landscape');
+% print(gcf,[fig_path 'plv_risk_vert.pdf'],'-dpdf','-bestfit') %use print function to save as pdf and 'best fit' the page
 
 %without log p-value = 0.0355, with log p-value = 0.147
 
