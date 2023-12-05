@@ -31,8 +31,8 @@ phase_freqs(3,3) = {phase_f_array((phase_f_array>=beta(1)&phase_f_array<beta(2))
 % amp frequencies of comodulogram 
 amp_f_array = 5:5:200; % values of amp freqs
 %define amp freqs of interest (gamma,hga,broadgamma)
-gamma = [30 60];
-hga = [60 200];
+gamma = [30 70];
+hga = [70 200];
 broadgamma = [30 200];
 %amp freq indices
 gamma_idx = find((amp_f_array>=gamma(1)&amp_f_array<=gamma(2)));

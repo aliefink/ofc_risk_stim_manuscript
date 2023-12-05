@@ -72,9 +72,6 @@ for s=1:length(subjs) %iterate through all subjects
     for e=1:data.n_elecs
         max_phase = data.max_phases{1,e};
         max_amp = data.max_amps{1,e};
-        max_phase = phase_f_array(sig_elecs_by_subj{8,1}{1})
-        data.max_phases{1,e};
-        
         if max_phase>=delta_theta(1) & max_phase<=delta_theta(end)
             num_delta_theta = num_delta_theta +1;
         end 
@@ -87,8 +84,8 @@ for s=1:length(subjs) %iterate through all subjects
     
 end 
 
-num_delta_theta_clust = 0;
-num_gamma_clust = 0;
+% num_delta_theta_clust = 0;
+% num_gamma_clust = 0;
     
 % for s=1:length(subjs) %iterate through all subjects   
 %     subj_id = char(subjs(s));

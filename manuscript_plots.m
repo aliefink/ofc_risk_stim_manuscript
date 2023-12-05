@@ -182,22 +182,7 @@ end
 % std(plv_distr_phase_freqs)
 % (std(plv_distr_phase_freqs)./sqrt(size(plv_distr_phase_freqs',1))) %SEM
 
-%%%%%PHASE line plot
 
-% % phase_f_array = 2:20;
-% %phase frequency distribution by mean plvs
-% figure('Name','Phase freq PLV Dist')
-% plv_distr_phase_freqs = mean(sig_mean_plv,1); %mean along columns - phase means
-% plot(phase_f_array,plv_distr_phase_freqs,'LineWidth',4,'Color','#225ea8') %2171b5  225ea8
-% set(gca,'FontSize',18,'XTick', phase_f_array(1:2:end),'TickDir','in','FontName','Arial','box','off');
-% xlabel('Frequency for Phase (Hz)','FontSize',26,'FontName','Arial');
-% ylabel('PLV_{z}','FontSize',26,'FontName','Arial');
-% xlim([phase_f_array(1),phase_f_array(end)])
-% ylim([1 3.25])
-% %add error bars 
-% hold on
-% phase_sem = std(sig_mean_plv)/sqrt(19);
-% errorbar(phase_f_array,plv_distr_phase_freqs,phase_sem,'k','linestyle','none','LineWidth', 1.5,'CapSize',1,'Color','#225ea8');%'Color', [.25 .25 .25]);
 %% AMP
 
 amp_f_array = 5:5:200;
@@ -261,23 +246,6 @@ std(plv_distr_amp_freqs)
 
 
 %%%%AMP PEAKS AT 35 AND 90
-
-% %% AMP line plot
-% amp_f_array = 5:5:200;
-% %amp frequency distribution by mean plvs
-% figure('Name','Amp freq PLV Dist')
-% plv_distr_amp_freqs = mean(sig_mean_plv,2)'; %mean along rows - amp means
-% plot(amp_f_array,plv_distr_amp_freqs,'LineWidth',4,'Color','#cb181d') %max peak @ 35 second @ 90
-% set(gca,'XTick',amp_f_array(4:4:end),'FontSize',18,'TickDir','in','FontName','Arial','box','off');
-% xlabel('Frequency for Amplitude (Hz)','FontSize',26,'FontName','Arial');
-% ylabel('PLV_{z}','FontSize',26,'FontName','Arial');
-% xlim([amp_f_array(1),amp_f_array(end)])
-% ylim([0 3.25])
-% %add error bars 
-% %calculate SEM for each amp freq
-% hold on 
-% amp_sem = std(sig_mean_plv')/sqrt(40);
-% errorbar(amp_f_array,plv_distr_amp_freqs,amp_sem,'k','linestyle','none','LineWidth', 1.5,'CapSize',1,'Color','#cb181d');%'Color', [.25 .25 .25]);
 
 % [pks,locs,w,p] = findpeaks(plv_distr_amp_freqs) 
 % findpeaks(plv_distr_amp_freqs)this will find the peaks right on plot!
@@ -393,11 +361,10 @@ set(gca, 'box', 'off')
 
 
 
-
-
-
 % print(gcf,[fig_path 'Freq Distribution Combo Vert.pdf'],'-dpdf','-bestfit')
 
+
+%% SUPPLEMENTARY FIGURES
 
 %% Fig 2D - Bar plot PLV values by frequency (block method)
 %uses get_plv_freq_info_block_method funct
@@ -414,7 +381,7 @@ set(gca, 'box', 'off')
 %from https://colorbrewer2.org/#type=sequential&scheme=OrRd&n=3 'OrRd' or 'Reds'
 
 
-%% SIG ELEC ONLY BARPLOT - BROADGAMMA
+%%%%%SIG ELEC ONLY BARPLOT - BROADGAMMA
 %%%%%   BROADGAMMA ONLY
 
 plv_by_freq = figure('Name','Mean PLV by Freq');
@@ -512,71 +479,20 @@ set(gcf,'PaperOrientation','landscape');
 % print(gcf,[fig_path 'barplot_broadgamma_sem.pdf'],'-dpdf','-bestfit') %use print function to save as pdf and 'best fit' the page
 
 
-%% significance testing for barplot 
+%%%%significance testing for barplot 
 
 anova_data = [sig_elec_plv_info.delta_theta_broadgamma_means; ...
     sig_elec_plv_info.alpha_broadgamma_means; ...
     sig_elec_plv_info.beta_broadgamma_means]';
 [p,tbl,stats] = anova1(anova_data)
 
-%% SIG ELEC ONLY BARPLOTS - GAMMA/HGA SPLIT
-
-sig_freq_specific_plvs = {sig_elec_plv_info.delta_theta_gamma_means, sig_elec_plv_info.delta_theta_hga_means,...
-    sig_elec_plv_info.alpha_gamma_means, sig_elec_plv_info.alpha_hga_means,...
-    sig_elec_plv_info.beta_gamma_means,sig_elec_plv_info.beta_hga_means};
-hga_letters = "HG";
-
-
-%%%%%%split by gamma/high gamma
-sig_plv_by_freq = figure('Name','Mean PLV by Freq');
-sig_plv_by_freq.Position = [0,0,750, 600];% plv_by_freq.Position(3:4) = [1000 1000];
-
-x_idxs = [1 2 3];
-sig_bar_y_vals = [mean(sig_elec_plv_info.delta_theta_gamma_means,'omitnan'), mean(sig_elec_plv_info.delta_theta_hga_means,'omitnan');...
-    mean(sig_elec_plv_info.alpha_gamma_means,'omitnan'), mean(sig_elec_plv_info.alpha_hga_means,'omitnan');...
-    mean(sig_elec_plv_info.beta_gamma_means,'omitnan'),mean(sig_elec_plv_info.beta_hga_means,'omitnan')];
-b = bar(x_idxs,sig_bar_y_vals,'grouped','FaceColor','flat','EdgeColor', 'w');
-set(gca,'XTickLabels', {'\fontname{Arial}Delta-Theta \bf\delta\theta\rm',...
-    '\fontname{Arial}Alpha \bf\alpha\rm','\fontname{Arial}Beta \bf\beta\rm'},...
-    'TickLength',[0 0],'FontSize',22,'FontName','Arial')%...
-
-title({'\rm\fontname{Arial}Sig Elec Low Frequency Phase Coupling to Gamma \fontsize{34}(\bf\gamma\rm)', '\fontsize{30}& High Gamma (HG) Amplitudes'},...
-    'VerticalAlignment','bottom','FontSize',30)
-xlabel('\fontname{Arial}Frequency for Phase (Hz)','FontSize',26)
-ylabel('\fontname{Arial}Phase-Amplitude Coupling (PLV)','FontSize',26)
-hold on 
-%manually set color data for each bar
-b(1,1).CData(1,:) = [0.8706,0.1765,0.1490];%[222,45,38]./255;
-b(1,1).CData(2,:) = [0.9882,0.5725,0.4471];%[252,146,114]./255;
-b(1,1).CData(3,:) = [0.99,0.8, 0.7];%[254,224,210]./255;[252,174,145]./255;0.9961    0.8980    0.8510
-
-b(1,2).CData(1,:) = [0.8706,0.1765,0.1490];%[222,45,38]./255;
-b(1,2).CData(2,:) = [0.9882,0.5725,0.4471];%[252,146,114]./255;
-b(1,2).CData(3,:) = [0.99,0.8, 0.7];%[254,224,210]./255;0.9957,0.8784,0.8235
-
-%add amp frequency label to top of bars
-xtips1 = b(1,1).XEndPoints; %1x3 X end points of gamma vals
-ytips1 = b(1,1).YEndPoints; %1x3 Y end points of gamma vals
-labels1 = {'\fontsize{20}\fontname{Arial}\bf\delta\theta\cdot\fontsize{22}\gamma',...
-    '\fontsize{20}\fontname{Arial}\bf\alpha\cdot\fontsize{22}\gamma',...
-    '\fontsize{20}\fontname{Arial}\bf\beta\cdot\fontsize{22}\gamma'};%should be same length as xtips (1x3)
-text(xtips1,ytips1,labels1,'HorizontalAlignment','center',...
-    'VerticalAlignment','bottom')
-xtips2 = b(1,2).XEndPoints; %1x3 X end points of hga vals
-ytips2 = b(1,2).YEndPoints; %1x3 Y end points of hga vals
-labels2 = {join(['\fontname{Arial}\fontsize{20}\bf\delta\theta\cdot\rm\fontsize{16}\fontname{Arial}\it',hga_letters],'',2),...
-    join(['\fontname{Arial}\fontsize{20}\bf\alpha\cdot\rm\fontsize{16}\fontname{Arial}\it',hga_letters],'',2),...
-    join(['\fontname{Arial}\fontsize{20}\bf\beta\cdot\rm\fontsize{16}\fontname{Arial}\it',hga_letters],'',2)};%should be same length as xtips (1x3)
-text(xtips2,ytips2,labels2,'HorizontalAlignment','center',...
-    'VerticalAlignment','bottom')
-% set(gca, 'box', 'off')
 
 
 %% Risk correlation scatter plot DELTA THETA GAMMA RISK
 
 % mean_deltatheta_gamma = all_elec_plv_info.delta_theta_hga_means;
-mean_deltatheta_gamma = sig_elec_plv_info.delta_theta_gamma_means(~isnan(sig_elec_plv_info.delta_theta_gamma_means)); %SIG
-% mean_deltatheta_gamma = log(mean_deltatheta_gamma);
+mean_deltatheta_gamma = sig_elec_plv_info.delta_theta_broadgamma_means(~isnan(sig_elec_plv_info.delta_theta_broadgamma_means)); %SIG
+%mean_deltatheta_gamma = log(mean_deltatheta_gamma);
 % nonsig_subj_idx = find(isnan(mean_deltatheta_gamma));
 risk_prefs = [0.4644 0.5474 0.4435 0.529 0.5173 0.539 0.4229 0.3819 0.4914 0.4957 0.5712 0.3628 0.4865 0.4609 0.4853];
 risk_prefs = risk_prefs(~isnan(mean_deltatheta_gamma)); %remove nonsig subj 
@@ -603,13 +519,13 @@ annotation('textbox',[.75 .75 .15 .125],'string',strcat('R^{2} = '," ",string(rs
 
 
 set(gca,'FontSize',18,'FontName','Arial','TickLength',[0 0])
-xlabel('PLV Z-Score (\bf\delta\theta\cdot\gamma\rm)','FontSize',24)
+xlabel('ln PLV Z-Score (\bf\delta\theta\cdot\gamma\rm)','FontSize',24)
 % xlabel('PLV Z-Score (Delta-Theta:Gamma)','FontSize',24)
 
 ylabel('Indifference Point','FontSize',24)
 set(gca, 'box', 'off')
 % set(gcf,'PaperOrientation','landscape');
-% print(gcf,[fig_path 'plv_risk_vert.pdf'],'-dpdf','-bestfit') %use print function to save as pdf and 'best fit' the page
+% print(gcf,[fig_path 'plv_risk_broadgamma.pdf'],'-dpdf','-bestfit') %use print function to save as pdf and 'best fit' the page
 
 %without log p-value = 0.0355, with log p-value = 0.147
 
@@ -623,12 +539,7 @@ set(gca, 'box', 'off')
 
 
 
-
-
-%% SUPPLEMENTARY FIGURES
-
-
-% Histogram of permutation values 
+%% Histogram of permutation values 
 
 subj_id = 's06';
 elec_id = '11';
